@@ -45,9 +45,10 @@ def draw_sprite(screen, sprites, sprite_number, sprite_x, sprite_y):
     screen.blit(sprites[sprite_number-1], (sprite_x * SIZE, sprite_y * SIZE),
           (0, 0, SIZE, SIZE))
 
+
 def draw_map(screen, sprites, map):
   screen.fill(BACKGROUND)
-  width, height = map.shape
+  height, width = map.shape
   for x in range(width):
     for y in range(height):
       draw_sprite(screen, sprites, map[y, x], x, y)
