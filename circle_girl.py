@@ -50,7 +50,7 @@ def draw_map(screen, sprites, map):
   width, height = map.shape
   for x in range(width):
     for y in range(height):
-      draw_sprite(screen, sprites, map[x, y], x, y)
+      draw_sprite(screen, sprites, map[y, x], x, y)
 
 
 def loop(screen, font, key_events, sprites, map):
