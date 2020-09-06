@@ -14,15 +14,15 @@ WHITE = (255, 255, 255)
 
 MAP = np.array([
 [ 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
-[ 66,  0,  0,  0,  0,  0, 67, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0, 66,  0, 66, 66, 66, 66, 66, 66,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0, 66,  0, 66,  0,  0,  0,  0, 66,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0, 66,  0, 66,  0,  0,  0,  0, 66,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0, 66,  0, 66,  0,  0,  0,  0, 66,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0, 66,  0, 66,  0,  0,  0,  0, 66,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0, 66,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66,  0,  0,  0, 66,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66],
+[ 66, 66, 66, 66, 66,  0, 67, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,  0,  0,  0,  0,  0,  0, 66],
 [ 66,  0,  0,  0,  0,  0, 67,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66,  0,  0,  0,  0,  0,  0, 66],
 [ 66,  0,  0,  0,  0,  0, 67,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66,  0,  0,  0,  0,  0,  0, 66],
 [ 66,  0,  0,  0,  0,  0, 67,  0,  0,  0,  0,  0,  0,  0,  0,  0, 66,  0,  0,  0,  0,  0,  0, 66],
@@ -39,6 +39,64 @@ MAP = np.array([
 [ 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66]
 ])
 
+def round_fc(proposed_loc):
+  floor = int(np.floor(float(proposed_loc) / SIZE))
+  ceil = int(np.ceil(float(proposed_loc) / SIZE))
+
+  return floor, ceil
+
+def is_wall(value):
+  return value in [66, 67]
+
+class CircleGirl(object):
+  def __init__(self, map, sprites, x, y):
+    self.map = map
+    self.sprites = sprites
+    self.x = x * SIZE
+    self.y = y * SIZE
+    self.dx = 4
+    self.dy = 0
+
+  def draw(self, screen):
+    screen.blit(self.sprites[0], (self.x, self.y), (0, 0, SIZE, SIZE))
+
+  def is_clear(self, dx, dy):
+    assert(not(dx != 0 and dy != 0))
+    if dx != 0:
+      if dx > 1:
+        nx = int(np.ceil((self.x + dx) / float(SIZE)))
+      else:
+        nx = int(np.floor((self.x + dx) / float(SIZE)))
+      floor, ceil = round_fc(self.y)
+      return not (is_wall(self.map[floor, nx]) or is_wall(self.map[ceil, nx]))
+    else:
+      if dy > 1:
+        ny = int(np.ceil((self.y + dy) / float(SIZE)))
+      else:
+        ny = int(np.floor((self.y + dy) / float(SIZE)))
+      floor, ceil = round_fc(self.x)
+      return not (is_wall(self.map[ny, floor]) or is_wall(self.map[ny, ceil]))
+
+  def update(self, key_events):
+    if K_RIGHT in key_events and self.is_clear(4, 0):
+      self.dx = 4
+      self.dy = 0
+    elif K_LEFT in key_events and self.is_clear(-4, 0):
+      self.dx = -4
+      self.dy = 0
+    elif K_DOWN in key_events and self.is_clear(0, 4):
+      self.dx = 0
+      self.dy = 4
+    elif K_UP in key_events and self.is_clear(0, -4):
+      self.dx = 0
+      self.dy = -4
+
+    width, height = self.map.shape
+
+    if self.is_clear(self.dx, self.dy):
+      self.x = (self.x + self.dx) % (width * SIZE)
+      self.y = (self.y + self.dy) % (height * SIZE)
+
 
 def draw_sprite(screen, sprites, sprite_number, sprite_x, sprite_y):
   if sprite_number > 0:
@@ -54,8 +112,10 @@ def draw_map(screen, sprites, map):
       draw_sprite(screen, sprites, map[y, x], x, y)
 
 
-def loop(screen, font, key_events, sprites, map):
+def loop(screen, font, key_events, sprites, map, circle_girl):
+  circle_girl.update(key_events)
   draw_map(screen, sprites, map)
+  circle_girl.draw(screen)
 
 
 def load_sprites(sheet):
@@ -91,26 +151,27 @@ def run():
   # Choose a font.
   font = pygame.font.SysFont('Arial', 20)
 
+  circle_girl = CircleGirl(MAP, sprites, 1, 1)
+
 
   clock = pygame.time.Clock()
   while True:
     events = pygame.event.get()
 
-    # Extract the key events.
-    key_events = set([e.key for e in events if e.type == KEYDOWN])
-
     for e in events:
       if e.type == QUIT:
         return
 
+    # Extract the key events.
+    key_events = set([e.key for e in events if e.type == KEYDOWN])
+
     # Update the screen.
-    loop(screen, font, key_events, sprites, MAP)
+    loop(screen, font, key_events, sprites, MAP, circle_girl)
 
     # Flip the display.
     pygame.display.flip()
 
-    print('Tick')
-    clock.tick(1)
+    clock.tick(25)
 
 
 if __name__ == '__main__':
