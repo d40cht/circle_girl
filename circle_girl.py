@@ -77,17 +77,17 @@ class CircleGirl(object):
       floor, ceil = round_fc(self.x)
       return not (is_wall(self.map[ny, floor]) or is_wall(self.map[ny, ceil]))
 
-  def update(self, key_events):
-    if K_RIGHT in key_events and self.is_clear(4, 0):
+  def update(self, keys_pressed):
+    if keys_pressed[K_RIGHT] and self.is_clear(4, 0):
       self.dx = 4
       self.dy = 0
-    elif K_LEFT in key_events and self.is_clear(-4, 0):
+    elif keys_pressed[K_LEFT] and self.is_clear(-4, 0):
       self.dx = -4
       self.dy = 0
-    elif K_DOWN in key_events and self.is_clear(0, 4):
+    elif keys_pressed[K_DOWN] and self.is_clear(0, 4):
       self.dx = 0
       self.dy = 4
-    elif K_UP in key_events and self.is_clear(0, -4):
+    elif keys_pressed[K_UP] and self.is_clear(0, -4):
       self.dx = 0
       self.dy = -4
 
@@ -112,8 +112,8 @@ def draw_map(screen, sprites, map):
       draw_sprite(screen, sprites, map[y, x], x, y)
 
 
-def loop(screen, font, key_events, sprites, map, circle_girl):
-  circle_girl.update(key_events)
+def loop(screen, font, keys_pressed, sprites, map, circle_girl):
+  circle_girl.update(keys_pressed)
   draw_map(screen, sprites, map)
   circle_girl.draw(screen)
 
@@ -163,10 +163,10 @@ def run():
         return
 
     # Extract the key events.
-    key_events = set([e.key for e in events if e.type == KEYDOWN])
+    keys_pressed = pygame.key.get_pressed()
 
     # Update the screen.
-    loop(screen, font, key_events, sprites, MAP, circle_girl)
+    loop(screen, font, keys_pressed, sprites, MAP, circle_girl)
 
     # Flip the display.
     pygame.display.flip()
